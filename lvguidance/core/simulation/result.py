@@ -52,8 +52,28 @@ class SimulationResult:
 
     @cached_property
     def miss_distance(self) -> float:
-        """Closest Point of Approach (CPA) / minimum miss distance [m]."""
-        return float(np.min(self.range))
+        """Closest Point of Approach (CPA) / minimum miss distance [m].
+
+        Computes the analytical minimum distance along the continuous trajectory
+        between integration samples.
+        """
+        if len(self.rel_pos) < 2:
+            return float(np.min(self.range))
+        idx = int(np.argmin(self.range))
+        min_d = float(self.range[idx])
+        for i in (idx - 1, idx):
+            if 0 <= i < len(self.rel_pos) - 1:
+                p0 = self.rel_pos[i]
+                v = self.rel_vel[i]
+                v2 = float(v @ v)
+                if v2 > 1e-6:
+                    dt_seg = float(self.t[i + 1] - self.t[i])
+                    tau_star = float(np.clip(-float(p0 @ v) / v2, 0.0, dt_seg))
+                    p_cpa = p0 + v * tau_star
+                    d_cpa = float(np.linalg.norm(p_cpa))
+                    if d_cpa < min_d:
+                        min_d = d_cpa
+        return min_d
 
     @cached_property
     def range_rate(self) -> Arr:

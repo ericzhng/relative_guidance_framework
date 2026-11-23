@@ -56,18 +56,30 @@ def compute_look_angle(chaser_vel: Vec, rel_pos: Vec, eps: float = 1e-9) -> floa
 def estimate_t_go(
     range_m: float,
     closing_speed_mps: float,
+    rendezvous: bool = False,
     accel_nom: float = 0.2,
-    t_go_min: float = 0.5,
+    t_go_min: float = 0.01,
 ) -> float:
     """Estimate time-to-go using closing speed and acceleration capabilities [s].
 
-    Combines closing-speed extrapolation with a nominal acceleration cap:
-    t_cap = 2 * sqrt(R / a_nom).
+    Args:
+        range_m: Current range to target [m].
+        closing_speed_mps: Closing speed V_c = -dR/dt [m/s].
+        rendezvous: If True, models decelerating to zero velocity (t_go = 2R/Vc).
+                    If False (intercept), models continuous-speed impact (t_go = R/Vc).
+        accel_nom: Nominal acceleration for kinematic cap [m/s^2].
+        t_go_min: Minimum floor on time-to-go [s].
     """
-    cap = 2.0 * float(np.sqrt(max(range_m, 0.0) / max(accel_nom, 1e-3)))
-    if closing_speed_mps > 1e-3:
-        stop_time = 2.0 * range_m / closing_speed_mps
-        t_est = min(stop_time, cap)
+    if rendezvous:
+        cap = 2.0 * float(np.sqrt(max(range_m, 0.0) / max(accel_nom, 1e-3)))
+        if closing_speed_mps > 1e-3:
+            stop_time = 2.0 * range_m / closing_speed_mps
+            t_est = min(stop_time, cap)
+        else:
+            t_est = cap
     else:
-        t_est = cap
+        if closing_speed_mps > 1e-3:
+            t_est = range_m / closing_speed_mps
+        else:
+            t_est = float(np.sqrt(2.0 * max(range_m, 0.0) / max(accel_nom, 1e-3)))
     return max(t_est, t_go_min)

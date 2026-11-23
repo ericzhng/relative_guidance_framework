@@ -59,7 +59,12 @@ class OptimalHomingGuidance(GuidanceLaw):
 
     def command(self, state: GuidanceState) -> Vec:
         """Compute the optimal intercept command."""
-        tau = state.t_go if state.t_final is not None else estimate_t_go(state.range, state.closing_speed)
+        if state.t_final is not None and state.t_final > state.t:
+            tau = state.t_go
+        else:
+            tau = estimate_t_go(
+                state.range, state.closing_speed, rendezvous=False, t_go_min=self.t_go_min
+            )
         tau = max(tau, self.t_go_min)
         return _optimal_command(state.rel_pos, state.rel_vel, tau, k_r=3.0, k_v=0.0)
 
@@ -102,7 +107,9 @@ class AdaptiveTgoGuidance(GuidanceLaw):
 
     def command(self, state: GuidanceState) -> Vec:
         """Compute the adaptive t_go optimal rendezvous command."""
-        tau = estimate_t_go(state.range, state.closing_speed, accel_nom=self.a_nom, t_go_min=self.t_go_min)
+        tau = estimate_t_go(
+            state.range, state.closing_speed, rendezvous=True, accel_nom=self.a_nom, t_go_min=self.t_go_min
+        )
         return _optimal_command(state.rel_pos, state.rel_vel, tau, k_r=6.0, k_v=2.0)
 
 
