@@ -12,6 +12,19 @@ Arr = NDArray[np.float64]
 
 
 @dataclass(frozen=True)
+class Burn:
+    """An impulsive velocity change manoeuvre.
+
+    Attributes:
+        time: Mission time of the burn [s].
+        dv: Velocity increment vector [m/s].
+    """
+
+    time: float
+    dv: NDArray[np.float64]
+
+
+@dataclass(frozen=True)
 class SimulationResult:
     """Time histories of one closed-loop guidance run.
 
@@ -24,6 +37,7 @@ class SimulationResult:
         cmd_accel: Commanded acceleration history, shape (N, 3) [m/s^2].
         max_accel: Maximum vehicle acceleration capability [m/s^2].
         events: Named mission-time events (e.g. {"handover": 250.0}).
+        burns: List of impulsive burns applied.
     """
 
     law_name: str
@@ -34,6 +48,7 @@ class SimulationResult:
     cmd_accel: Arr
     max_accel: float
     events: dict[str, float] = field(default_factory=dict)
+    burns: list[Burn] = field(default_factory=list)
 
     @cached_property
     def rel_pos(self) -> Arr:
@@ -103,6 +118,27 @@ class SimulationResult:
 
     @cached_property
     def delta_v(self) -> Arr:
-        """Cumulative delta-v spent [m/s]."""
+        """Cumulative delta-v spent [m/s] (continuous integration plus discrete impulsive burns)."""
         dt = np.diff(self.t, prepend=self.t[0])
-        return np.cumsum(self.accel_norm * dt)
+        total = np.cumsum(self.accel_norm * dt)
+        if self.burns:
+            for b in self.burns:
+                idx = int(np.argmin(np.abs(self.t - b.time)))
+                total[idx:] += float(np.linalg.norm(b.dv))
+        return total
+
+    @property
+    def impulsive_delta_v(self) -> float:
+        """Total impulsive delta-v spent [m/s]."""
+        return sum(float(np.linalg.norm(b.dv)) for b in self.burns)
+
+    @property
+    def continuous_delta_v(self) -> float:
+        """Total continuous delta-v spent [m/s]."""
+        dt = np.diff(self.t, prepend=self.t[0])
+        return float(np.sum(self.accel_norm * dt))
+
+    @property
+    def num_burns(self) -> int:
+        """Number of impulsive burns applied."""
+        return len(self.burns)

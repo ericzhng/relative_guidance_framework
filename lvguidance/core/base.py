@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -18,14 +19,15 @@ class GuidanceLaw(ABC):
     Conventions:
         Relative state: ``x = r_target - r_chaser``, ``xdot = v_target - v_chaser``.
         Double-integrator control: ``xddot = -u + a_target + Delta_g``.
-        A positive command ``u`` along the LOS accelerates the chaser toward the target.
+        Supports continuous acceleration commands, discrete impulsive burns (delta_v),
+        or hybrid actuation.
     """
 
     name: str = "guidance"
+    control_dt: float | None = None
 
-    @abstractmethod
     def command(self, state: GuidanceState) -> Vec:
-        """Compute the acceleration command.
+        """Compute the continuous acceleration command.
 
         Args:
             state: Current relative navigation state.
@@ -33,7 +35,16 @@ class GuidanceLaw(ABC):
         Returns:
             Command acceleration vector ``u`` [m/s^2].
         """
+        return np.zeros(3)
 
-    def reset(self) -> None:
+    def reset(self, scenario: Any = None) -> None:
         """Clear internal memory before a new simulation run."""
         pass
+
+    def burn_times(self) -> Sequence[float]:
+        """Return scheduled mission times [s] for impulsive velocity burns."""
+        return ()
+
+    def burn(self, t: float, state: Any) -> Vec:
+        """Compute the impulsive velocity change delta-v [m/s] at time t."""
+        return np.zeros(3)
