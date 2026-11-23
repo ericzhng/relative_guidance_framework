@@ -32,3 +32,7 @@ ignore_missing_imports = true
 warn_unused_ignores = true
 show_error_codes = true
 
+[tool.pyright]
+reportMissingTypeStubs = false
+
+
