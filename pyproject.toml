@@ -3,7 +3,7 @@ name = "lvguidance"
 version = "0.1.0"
 description = "Rendezvous / approach guidance laws for a launch vehicle upper stage and a moving orbital target."
 requires-python = ">=3.10"
-dependencies = ["numpy", "matplotlib"]
+dependencies = ["numpy", "scipy>=1.10", "matplotlib"]
 
 [tool.setuptools.packages.find]
 include = ["lvguidance*"]
