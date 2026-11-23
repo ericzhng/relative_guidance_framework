@@ -3,7 +3,7 @@
 
 **Document Version:** 1.0  
 **Status:** Approved Architecture Plan  
-**Target Architecture:** Modular Core (`lvguidance.core`) + Domain Applications (`lvguidance.applications`)
+**Target Architecture:** Modular Core (`relguide.core`) + Domain Applications (`relguide.applications`)
 
 ---
 
@@ -20,9 +20,9 @@ $$\ddot{\mathbf{x}} = \mathbf{a}_T - \mathbf{a}_C + \Delta\mathbf{g}(\mathbf{r}_
 $$\mathbf{u} = \mathbf{f}(\mathbf{x}, \dot{\mathbf{x}}, \boldsymbol{\Omega}_{LOS}, t_{go})$$
 
 ### The Architecture Principle:
-1. **The Essential Core (`lvguidance.core`)**:
+1. **The Essential Core (`relguide.core`)**:
    Contains universal relative kinematics, line-of-sight geometry, generic optimal control (ZEM/ZEV with configurable gains), sliding mode control, pursuit/corridor tracking, unified simulation propagation, actuator/autopilot models, and sensor/seeker abstractions.
-2. **Domain Applications (`lvguidance.applications`)**:
+2. **Domain Applications (`relguide.applications`)**:
    - **`applications.missile_homing`**: High-speed intercept, maneuvering targets (weaving, constant g), True/Pure/Augmented PN, seeker field-of-view (FOV) limits, autopilot lag ($\tau_a$), miss distance and CEP metrics.
    - **`applications.orbital_rendezvous`**: Two-body orbital dynamics, LVLH coordinate frame, differential gravity feed-forward, docking corridor glideslope, prescribed docking velocity, propellant $\Delta V$ optimization.
    - **`applications.powered_descent`** *(Future Extension)*: Planetary/lunar landing, terrain clearance, Apollo-style polynomial and soft-touchdown guidance.
@@ -39,7 +39,7 @@ launch_vehicle_guidance_law/
 │   ├── guidance_theory.md             # Theoretical derivations
 │   └── improvement_plan.md            # This architecture & roadmap document
 │
-├── lvguidance/                        # Main package root
+├── relguide/                        # Main package root
 │   ├── __init__.py
 │   │
 │   ├── core/                          # === THE ESSENTIAL CORE ===
@@ -141,20 +141,20 @@ This single mathematical formulation handles both missile homing and spacecraft 
 
 ### Phase 1: Core Kinematics & Subsystem Realism
 
-#### 1.1 Robust Relative Kinematics (`lvguidance.core.kinematics`)
+#### 1.1 Robust Relative Kinematics (`relguide.core.kinematics`)
 - Implement closed-form, numerically safe calculations for:
   - Line-of-sight angular rate vector $\boldsymbol{\Omega}$ with singular limit protections as $R \to 0$.
   - Seeker look-angle $\eta = \arccos(\hat{\mathbf{v}}_C \cdot \hat{\mathbf{l}})$.
   - Time-to-go estimators: nominal closing rate $R / V_c$, constant deceleration $2R / V_c$, and kinematic range-bound $2\sqrt{R/a_{\text{nom}}}$.
 
-#### 1.2 Actuator & Autopilot Dynamics (`lvguidance.core.models.autopilot`)
+#### 1.2 Actuator & Autopilot Dynamics (`relguide.core.models.autopilot`)
 - Add an `AutopilotModel` component to the simulation loop:
   - First-order or second-order lag:
     $$\tau_a \dot{\mathbf{a}}_c + \mathbf{a}_c = \mathbf{u}_{\text{cmd}}$$
   - Acceleration rate limit (slew rate saturation): $\|\dot{\mathbf{a}}_c\| \le \dot{a}_{\max}$.
   - Acceleration limit (maximum g capability): $\|\mathbf{a}_c\| \le a_{\max}$.
 
-#### 1.3 Seeker & Estimation Models (`lvguidance.core.models.seeker`)
+#### 1.3 Seeker & Estimation Models (`relguide.core.models.seeker`)
 - **Seeker Gimbal Model**: Monitor FOV cone (e.g., maximum look angle $45^\circ$).
 - **Measurement Noise**: Add Gaussian noise to measured line-of-sight angle.
 - **Filter**: Provide an optional discrete-time Kalman Filter / $\alpha$-$\beta$ tracking filter for estimating smooth LOS rate $\hat{\boldsymbol{\Omega}}$ and $t_{go}$.
@@ -163,7 +163,7 @@ This single mathematical formulation handles both missile homing and spacecraft 
 
 ### Phase 2: Core Guidance Law Portfolio
 
-1. **`ProportionalNavigation` (`lvguidance.core.laws.proportional_nav`)**:
+1. **`ProportionalNavigation` (`relguide.core.laws.proportional_nav`)**:
    - **True Proportional Navigation (TPN)**:
      $$\mathbf{u} = N V_c (\boldsymbol{\Omega} \times \hat{\mathbf{l}})$$
      Command applied normal to the line of sight.
@@ -173,25 +173,25 @@ This single mathematical formulation handles both missile homing and spacecraft 
      Includes target acceleration feed-forward:
      $$\mathbf{u} = N V_c (\boldsymbol{\Omega} \times \hat{\mathbf{l}}) + \frac{N}{2} \mathbf{a}_T^{\perp}$$
 
-2. **`OptimalGuidance` (`lvguidance.core.laws.optimal`)**:
+2. **`OptimalGuidance` (`relguide.core.laws.optimal`)**:
    - Refactor existing `ZemZevGuidance`, `AdaptiveTgoGuidance`, and `TerminalVelocityGuidance` into the unified Bryson-Ho formulation.
    - Support both intercept ($K_r=3, K_v=0$) and rendezvous ($K_r=6, K_v=2$).
 
-3. **`SlidingModeGuidance` (`lvguidance.core.laws.sliding_mode`)**:
+3. **`SlidingModeGuidance` (`relguide.core.laws.sliding_mode`)**:
    - Generalize the sliding surface:
      $$\mathbf{s} = \dot{\mathbf{x}}_{\perp} + c_1 \mathbf{x}_{\perp} \quad \text{(for missile LOS nulling)}$$
      or
      $$\mathbf{s} = \dot{\mathbf{x}} + v_c(R)\hat{\mathbf{l}} \quad \text{(for approach braking)}$$
    - Include continuous boundary-layer saturation and optional surface-acceleration feedforward.
 
-4. **`PhasedGuidance` (`lvguidance.core.laws.phased`)**:
+4. **`PhasedGuidance` (`relguide.core.laws.phased`)**:
    - Maintain the reliable one-way handover logic for multi-phase flight (e.g., Midcourse OGL $\to$ Terminal PN or Glideslope).
 
 ---
 
 ### Phase 3: Application Modules
 
-#### Application 1: Missile Homing Intercept (`lvguidance.applications.missile_homing`)
+#### Application 1: Missile Homing Intercept (`relguide.applications.missile_homing`)
 - **Target Maneuver Library**:
   - `StationaryTarget`: Static or non-maneuvering target.
   - `ConstantTurnTarget`: Pulling steady $n$-g lateral acceleration (e.g., $3g$ or $5g$).
@@ -206,7 +206,7 @@ This single mathematical formulation handles both missile homing and spacecraft 
   - Peak and RMS acceleration demands, control energy $\int \|\mathbf{u}\|^2 dt$.
   - Seeker blind-zone / FOV violations.
 
-#### Application 2: Orbital Rendezvous & Proximity Operations (`lvguidance.applications.orbital_rendezvous`)
+#### Application 2: Orbital Rendezvous & Proximity Operations (`relguide.applications.orbital_rendezvous`)
 - Preserve and wrap all existing orbital rendezvous capabilities:
   - Two-body gravity propagation and exact differential gravity feed-forward.
   - LVLH reference frame transformations.
@@ -260,8 +260,8 @@ gantt
 - [x] **Milestone 0: Baseline Health**
   - [x] Add `pythonpath = ["."]` in `pyproject.toml` so test discovery runs cleanly.
 - [x] **Milestone 1: Core Framework Architecture**
-  - [x] Implement `lvguidance.core.kinematics` with robust 3D LOS and angular rate math.
-  - [x] Implement `lvguidance.core.models.autopilot` (lag, rate limits) and `seeker` (FOV, noise, alpha-beta filter).
+  - [x] Implement `relguide.core.kinematics` with robust 3D LOS and angular rate math.
+  - [x] Implement `relguide.core.models.autopilot` (lag, rate limits) and `seeker` (FOV, noise, alpha-beta filter).
   - [x] Standardize `GuidanceState` to support closing speed, LOS rate vector, and target acceleration.
 - [x] **Milestone 2: Guidance Law Portfolio**
   - [x] Implement `ProportionalNavigation` (TPN, PPN, APN, BPN / IACG).
@@ -280,6 +280,6 @@ gantt
 ## 6. Clean Refactoring Strategy (Zero Backward-Compatibility Debt)
 
 As instructed, this architecture represents a **clean refactor** with no legacy shims or backwards compatibility compromises:
-1. **Direct Package Restructuring**: Legacy directories (`lvguidance/dynamics`, `lvguidance/guidance`, `lvguidance/simulation`, `lvguidance/visualization`) are fully migrated to `lvguidance.core` and `lvguidance.applications`.
+1. **Direct Package Restructuring**: Legacy directories (`relguide/dynamics`, `relguide/guidance`, `relguide/simulation`, `relguide/visualization`) are fully migrated to `relguide.core` and `relguide.applications`.
 2. **Clean Import Paths**: No deprecated aliases or duplicate wrappers. Every module directly imports from its designated core or application namespace.
 3. **Migrated Test & Example Suites**: Tests in `tests/` and examples in `examples/` are comprehensively updated to the new modular structure, validating both missile homing intercept and orbital rendezvous applications.

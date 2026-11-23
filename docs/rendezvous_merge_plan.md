@@ -3,7 +3,7 @@
 **Document Version:** 1.0  
 **Status:** COMPLETED & VERIFIED  
 **Source Repositories:**  
-- **Primary / Host:** `E:\2026-11\launch_vehicle_guidance_law` (`lvguidance`)  
+- **Primary / Host:** `E:\2026-11\launch_vehicle_guidance_law` (`relguide`)  
 - **Source for Integration:** `E:\2026-11\spacecraft_rendezvous` (`rendezvous`)  
 
 ---
@@ -14,7 +14,7 @@ Both codebases deal with relative navigation and guidance, but they approach the
 
 ```mermaid
 flowchart LR
-    subgraph Host ["Current Repo: launch_vehicle_guidance_law (lvguidance)"]
+    subgraph Host ["Current Repo: launch_vehicle_guidance_law (relguide)"]
         direction TB
         H1["Core: Relative Kinematics, State-Space, Autopilot, Seeker"]
         H2["Actuation: Continuous Thrust Acceleration (RK4)"]
@@ -35,12 +35,12 @@ flowchart LR
 
 ### Detailed Gap Matrix
 
-| Feature / Capability | Current `lvguidance` | External `spacecraft_rendezvous` | The Gap & Synergistic Value |
+| Feature / Capability | Current `relguide` | External `spacecraft_rendezvous` | The Gap & Synergistic Value |
 |---|---|---|---|
-| **Domain Scope** | **Missile Intercept + Orbital Rendezvous** (Unified Core) | **Orbital Rendezvous Only** (Teaching package) | `spacecraft_rendezvous` has zero missile capability; `lvguidance` has full missile homing suite. |
-| **Actuation Modes** | **Continuous thrust only** ($u(t) \in \mathbb{R}^3$, continuous specific force) | **Hybrid: Impulsive ($\Delta v_k$) and Continuous ($a(t)$)** | `lvguidance` cannot currently schedule or simulate impulsive burns ($\Delta v$). |
-| **Astrodynamics Tooling** | Point-mass RK4 gravity with circular orbit initial states | **Universal variable Kepler propagator**, **Lambert solver (zero-rev)**, **CW State Transition Matrix $\Phi(t)$**, **ZOH discretization** | `spacecraft_rendezvous` has advanced astrodynamics tools that `lvguidance` currently lacks. |
-| **Rendezvous Algorithm Portfolio** | Continuous only: ZEM/ZEV (fixed/adaptive $t_{go}$), Terminal velocity, Glideslope, Sliding Mode | **Two-Impulse CW**, **Lambert Transfer**, **Multi-Impulse Glideslope**, **Discrete LQR (DARE)**, **Constrained MPC (`lsq_linear`)** | `spacecraft_rendezvous` provides 5 major algorithms (classical impulsive and modern optimization-based LQR/MPC) not present in `lvguidance`. |
+| **Domain Scope** | **Missile Intercept + Orbital Rendezvous** (Unified Core) | **Orbital Rendezvous Only** (Teaching package) | `spacecraft_rendezvous` has zero missile capability; `relguide` has full missile homing suite. |
+| **Actuation Modes** | **Continuous thrust only** ($u(t) \in \mathbb{R}^3$, continuous specific force) | **Hybrid: Impulsive ($\Delta v_k$) and Continuous ($a(t)$)** | `relguide` cannot currently schedule or simulate impulsive burns ($\Delta v$). |
+| **Astrodynamics Tooling** | Point-mass RK4 gravity with circular orbit initial states | **Universal variable Kepler propagator**, **Lambert solver (zero-rev)**, **CW State Transition Matrix $\Phi(t)$**, **ZOH discretization** | `spacecraft_rendezvous` has advanced astrodynamics tools that `relguide` currently lacks. |
+| **Rendezvous Algorithm Portfolio** | Continuous only: ZEM/ZEV (fixed/adaptive $t_{go}$), Terminal velocity, Glideslope, Sliding Mode | **Two-Impulse CW**, **Lambert Transfer**, **Multi-Impulse Glideslope**, **Discrete LQR (DARE)**, **Constrained MPC (`lsq_linear`)** | `spacecraft_rendezvous` provides 5 major algorithms (classical impulsive and modern optimization-based LQR/MPC) not present in `relguide`. |
 | **Relative Dynamics Formulation** | Inertial double integrator $\ddot{\mathbf{x}} = -\mathbf{u} + \Delta\mathbf{g}$ with differential gravity feedforward | Rotating LVLH frame with linearized Clohessy-Wiltshire (CW / Hill) equations | Merging allows direct side-by-side comparison of **Linear CW (LQR/MPC/Impulsive)** vs. **Inertial Feedforward ZEM/ZEV**. |
 | **Integration Engine** | Fixed-step RK4 with substepping | Adaptive `scipy.integrate.solve_ivp(DOP853)` on ECI two-body states | `spacecraft_rendezvous` provides high-precision propagation with discrete impulsive event handling. |
 | **External Dependencies** | `numpy`, `matplotlib` | `numpy`, `scipy` (`scipy.linalg`, `scipy.optimize`, `scipy.integrate`), `matplotlib` | Merging will introduce `scipy` into `pyproject.toml` (already standard in the environment). |
@@ -49,12 +49,12 @@ flowchart LR
 
 ## 2. Proposed Target Unified Architecture
 
-We will preserve the **Core + Applications** architecture established in `lvguidance`, enhancing the core with astrodynamics utilities and expanding the `orbital_rendezvous` application with the new algorithms:
+We will preserve the **Core + Applications** architecture established in `relguide`, enhancing the core with astrodynamics utilities and expanding the `orbital_rendezvous` application with the new algorithms:
 
 ```
 launch_vehicle_guidance_law/
 ├── pyproject.toml                     # Add scipy>=1.10 dependency
-├── lvguidance/
+├── relguide/
 │   ├── core/                          # === ENHANCED CORE ===
 │   │   ├── kinematics.py              # Relative kinematics & LOS
 │   │   ├── state.py                   # GuidanceState
@@ -104,7 +104,7 @@ launch_vehicle_guidance_law/
 
 ### Step 1: Dependencies & Core Astrodynamics Integration
 1. Update `pyproject.toml` to include `scipy>=1.10`.
-2. Extract clean astrodynamics utilities into `lvguidance.core.astrodynamics`:
+2. Extract clean astrodynamics utilities into `relguide.core.astrodynamics`:
    - `kepler.py`: `stumpff_c`, `stumpff_s`, universal Kepler `propagate()`, and `lambert()` solver.
    - `clohessy_wiltshire.py`: `cw_matrices()`, closed-form `cw_stm()`, `cw_required_velocity()`, and `discretize_zoh()`.
    - `frames.py`: `lvlh_dcm()`, `eci_to_lvlh()`, `lvlh_to_eci()`.
@@ -114,7 +114,7 @@ In `spacecraft_rendezvous`, controllers can implement:
 - `burn_times() -> Sequence[float]` and `burn(t, x) -> Vec` ($\Delta v$ vector at node)
 - `acceleration(t, x) -> Vec` (continuous specific thrust force)
 
-We will standardize this cleanly in `lvguidance.core.base.GuidanceLaw`:
+We will standardize this cleanly in `relguide.core.base.GuidanceLaw`:
 - `command(state) -> Vec`: continuous acceleration demand (default).
 - `burn_times() -> Sequence[float]`: scheduled impulsive burn times (optional).
 - `burn(t, state) -> Vec`: impulsive velocity increment $\Delta v$ (optional).
@@ -130,7 +130,7 @@ Port and adapt the 5 algorithms from `spacecraft_rendezvous/rendezvous/algorithm
 Combine them alongside the existing continuous laws (`ZemZevGuidance`, `AdaptiveTgoGuidance`, `SlidingModeGuidance`, `TerminalApproachGuidance`, `PhasedGuidance`).
 
 ### Step 4: Unified Simulation Runner & Metrics
-Unify the simulation runner in `lvguidance.applications.orbital_rendezvous.runner`:
+Unify the simulation runner in `relguide.applications.orbital_rendezvous.runner`:
 - Propagates nonlinear two-body dynamics with exact LVLH frame tracking.
 - Applies discrete impulsive burns ($\Delta v$) at designated times.
 - Integrates continuous thrust acceleration ($a(t)$) over time.
@@ -154,7 +154,7 @@ Before proceeding with the merge, please consider the following decision points:
 2. **Propagator Selection**:
    Do you prefer keeping the clean RK4 fixed-step propagator with substepping, or using SciPy's `solve_ivp(DOP853)` for orbital rendezvous simulations? (We recommend supporting both: RK4 for fast continuous guidance loops and `solve_ivp` for high-precision hybrid impulsive/continuous rendezvous).
 3. **Naming & Namespaces**:
-   Should the merged algorithms live under `lvguidance.applications.orbital_rendezvous` (preserving the `lvguidance` brand), or would you prefer a different namespace?
+   Should the merged algorithms live under `relguide.applications.orbital_rendezvous` (preserving the `relguide` brand), or would you prefer a different namespace?
 
 ---
 
@@ -165,25 +165,25 @@ Before proceeding with the merge, please consider the following decision points:
 
 ## 5. Parity Verification & Safe Deletion Audit
 
-Every module, algorithm, utility, test, and visualization capability from `E:\2026-11\spacecraft_rendezvous` has been 100% ported, unified, and verified in `launch_vehicle_guidance_law` (`lvguidance`):
+Every module, algorithm, utility, test, and visualization capability from `E:\2026-11\spacecraft_rendezvous` has been 100% ported, unified, and verified in `launch_vehicle_guidance_law` (`relguide`):
 
-| `spacecraft_rendezvous` Component | Merged Location in `lvguidance` | Verification Status |
+| `spacecraft_rendezvous` Component | Merged Location in `relguide` | Verification Status |
 |---|---|:---:|
-| `rendezvous.constants` (`MU`, `R_EARTH`, etc.) | `lvguidance.core.astrodynamics.constants` | Verified |
-| `rendezvous.kepler` (`stumpff`, `propagate`, `lambert`) | `lvguidance.core.astrodynamics.kepler` | Verified |
-| `rendezvous.frames` (`lvlh_dcm`, `eci_to_lvlh`, `lvlh_to_eci`) | `lvguidance.core.astrodynamics.frames` | Verified |
-| `rendezvous.dynamics` (`cw_matrices`, `cw_stm`, `discretize_zoh`) | `lvguidance.core.astrodynamics.clohessy_wiltshire` | Verified |
-| `rendezvous.algorithms.TwoImpulseCW` | `lvguidance.applications.orbital_rendezvous.algorithms.TwoImpulseCW` | Verified |
-| `rendezvous.algorithms.LambertTransfer` | `lvguidance.applications.orbital_rendezvous.algorithms.LambertTransfer` | Verified |
-| `rendezvous.algorithms.Glideslope` | `lvguidance.applications.orbital_rendezvous.algorithms.ImpulsiveGlideslope` | Verified |
-| `rendezvous.algorithms.LQRController` | `lvguidance.applications.orbital_rendezvous.algorithms.LQRController` | Verified |
-| `rendezvous.algorithms.MPCController` | `lvguidance.applications.orbital_rendezvous.algorithms.MPCController` | Verified |
-| `rendezvous.scenario.Scenario` | `lvguidance.applications.orbital_rendezvous.scenario.OrbitalScenario` | Verified |
-| `rendezvous.simulation.Simulator` (`solve_ivp` DOP853) | `lvguidance.core.simulation.engine.simulate_ivp` | Verified |
-| `rendezvous.metrics` | `lvguidance.applications.orbital_rendezvous.metrics` | Verified |
-| `rendezvous.comparison` | `lvguidance.applications.orbital_rendezvous.runner.run_comparison` | Verified |
-| `rendezvous.visualization.plots` (2D/3D, LOS sphere, Earth orbit) | `lvguidance.applications.orbital_rendezvous.visualization` | Verified |
-| `rendezvous.visualization.animation` (`animate_rendezvous` GIF) | `lvguidance.applications.orbital_rendezvous.visualization.animate_rendezvous` | Verified |
+| `rendezvous.constants` (`MU`, `R_EARTH`, etc.) | `relguide.core.astrodynamics.constants` | Verified |
+| `rendezvous.kepler` (`stumpff`, `propagate`, `lambert`) | `relguide.core.astrodynamics.kepler` | Verified |
+| `rendezvous.frames` (`lvlh_dcm`, `eci_to_lvlh`, `lvlh_to_eci`) | `relguide.core.astrodynamics.frames` | Verified |
+| `rendezvous.dynamics` (`cw_matrices`, `cw_stm`, `discretize_zoh`) | `relguide.core.astrodynamics.clohessy_wiltshire` | Verified |
+| `rendezvous.algorithms.TwoImpulseCW` | `relguide.applications.orbital_rendezvous.algorithms.TwoImpulseCW` | Verified |
+| `rendezvous.algorithms.LambertTransfer` | `relguide.applications.orbital_rendezvous.algorithms.LambertTransfer` | Verified |
+| `rendezvous.algorithms.Glideslope` | `relguide.applications.orbital_rendezvous.algorithms.ImpulsiveGlideslope` | Verified |
+| `rendezvous.algorithms.LQRController` | `relguide.applications.orbital_rendezvous.algorithms.LQRController` | Verified |
+| `rendezvous.algorithms.MPCController` | `relguide.applications.orbital_rendezvous.algorithms.MPCController` | Verified |
+| `rendezvous.scenario.Scenario` | `relguide.applications.orbital_rendezvous.scenario.OrbitalScenario` | Verified |
+| `rendezvous.simulation.Simulator` (`solve_ivp` DOP853) | `relguide.core.simulation.engine.simulate_ivp` | Verified |
+| `rendezvous.metrics` | `relguide.applications.orbital_rendezvous.metrics` | Verified |
+| `rendezvous.comparison` | `relguide.applications.orbital_rendezvous.runner.run_comparison` | Verified |
+| `rendezvous.visualization.plots` (2D/3D, LOS sphere, Earth orbit) | `relguide.applications.orbital_rendezvous.visualization` | Verified |
+| `rendezvous.visualization.animation` (`animate_rendezvous` GIF) | `relguide.applications.orbital_rendezvous.visualization.animate_rendezvous` | Verified |
 | `tests/test_rendezvous.py` | `tests/test_astrodynamics.py` & `tests/test_orbital_rendezvous.py` | Verified (38/38 pass) |
 | `examples/compare_algorithms.py` | `examples/compare_rendezvous_laws.py` & `examples/compare_laws.py` | Verified |
 

@@ -1,11 +1,11 @@
-# lvguidance
+# relguide
 
 A unified relative guidance and control framework covering **Missile Homing Intercept** and **Spacecraft Orbital Rendezvous / Docking**. Built on a shared mathematical core of relative kinematics, line-of-sight (LOS) dynamics, Keplerian & Clohessy-Wiltshire (CW) astrodynamics, generalized zero-effort miss/velocity (ZEM/ZEV) optimal control, sliding-mode control, and hybrid simulation (continuous thrust RK4 and DOP853 impulsive/continuous integration).
 
 ## Architecture
 
 ```
-lvguidance/
+relguide/
   core/                          # Universal relative guidance foundation
     astrodynamics/               # Kepler propagation, Lambert solver, CW STM, LVLH frames
     kinematics.py                # 3D line-of-sight vectors, LOS rate, closing speed, t_go
@@ -39,7 +39,7 @@ docs/
 
 ## Guidance & Control Algorithm Suite
 
-### 1. Missile Homing Intercept (`lvguidance.applications.missile_homing`)
+### 1. Missile Homing Intercept (`relguide.applications.missile_homing`)
 | Law | Family | Key Characteristic |
 |---|---|---|
 | `TrueProportionalNavigation` | Classical | Commands acceleration normal to LOS: $u = N V_c (oldsymbol{\Omega} 	imes \hat{\mathbf{l}})$ |
@@ -49,7 +49,7 @@ docs/
 | `BiasedProportionalNavigation` | Advanced | Impact Angle Control Guidance (IACG) with smooth terminal fade |
 | `SlidingModeHomingGuidance` | Robust | Nulls LOS angular rate with continuous boundary layer |
 
-### 2. Spacecraft Orbital Rendezvous (`lvguidance.applications.orbital_rendezvous`)
+### 2. Spacecraft Orbital Rendezvous (`relguide.applications.orbital_rendezvous`)
 | Algorithm | Actuation | Type | Description |
 |---|---|---|---|
 | `TwoImpulseCW` | Impulsive | Analytical | Classical Clohessy-Wiltshire 2-burn rendezvous via partitioned STM targeting |

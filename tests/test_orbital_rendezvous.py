@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from lvguidance.applications.orbital_rendezvous import (
+from relguide.applications.orbital_rendezvous import (
     MU_EARTH,
     ImpulsiveGlideslope,
     LambertTransfer,
@@ -18,11 +18,11 @@ from lvguidance.applications.orbital_rendezvous import (
     simulate_rendezvous,
     to_lvlh,
 )
-from lvguidance.core.laws.phased import PhasedGuidance
-from lvguidance.core.laws.pursuit import TerminalApproachGuidance
-from lvguidance.core.laws.sliding_mode import SlidingModeGuidance
-from lvguidance.core.simulation.engine import propagate_rk4
-from lvguidance.core.simulation.metrics import summarize
+from relguide.core.laws.phased import PhasedGuidance
+from relguide.core.laws.pursuit import TerminalApproachGuidance
+from relguide.core.laws.sliding_mode import SlidingModeGuidance
+from relguide.core.simulation.engine import propagate_rk4
+from relguide.core.simulation.metrics import summarize
 
 
 def _energy(state: np.ndarray) -> float:

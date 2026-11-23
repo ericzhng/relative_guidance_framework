@@ -17,15 +17,15 @@ matplotlib.use("Agg")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from lvguidance.applications.missile_homing import (
+from relguide.applications.missile_homing import (
     MissileScenario,
     WeavingTarget,
     default_missile_laws,
     monte_carlo_missile,
     simulate_missile,
 )
-from lvguidance.core.simulation.metrics import format_table
-from lvguidance.core.visualization import (
+from relguide.core.simulation.metrics import format_table
+from relguide.core.visualization import (
     plot_comparison,
     plot_engagement,
     plot_metric_bars,

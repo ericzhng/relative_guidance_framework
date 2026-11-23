@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from lvguidance.core.kinematics import (
+from relguide.core.kinematics import (
     compute_closing_speed,
     compute_look_angle,
     compute_los,
@@ -12,20 +12,20 @@ from lvguidance.core.kinematics import (
     compute_range_rate,
     estimate_t_go,
 )
-from lvguidance.core.laws.optimal import (
+from relguide.core.laws.optimal import (
     ZemZevGuidance,
 )
-from lvguidance.core.laws.proportional_nav import (
+from relguide.core.laws.proportional_nav import (
     AugmentedProportionalNavigation,
     BiasedProportionalNavigation,
     TrueProportionalNavigation,
 )
-from lvguidance.core.laws.pursuit import (
+from relguide.core.laws.pursuit import (
     ProportionalDerivative,
 )
-from lvguidance.core.models.autopilot import AutopilotModel
-from lvguidance.core.models.seeker import AlphaBetaFilter, SeekerModel
-from lvguidance.core.state import GuidanceState
+from relguide.core.models.autopilot import AutopilotModel
+from relguide.core.models.seeker import AlphaBetaFilter, SeekerModel
+from relguide.core.state import GuidanceState
 
 
 def test_kinematics_basic_properties():

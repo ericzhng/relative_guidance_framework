@@ -1,6 +1,6 @@
 # Unified Theory of Relative Guidance: Missile Homing & Orbital Rendezvous
 
-This document establishes the mathematical and control-theoretic foundations of the unified `lvguidance` framework. Both missile homing intercept and spacecraft orbital rendezvous are formulated under a common relative-motion state space, with application-specific constraints and dynamics applied in their respective domain modules.
+This document establishes the mathematical and control-theoretic foundations of the unified `relguide` framework. Both missile homing intercept and spacecraft orbital rendezvous are formulated under a common relative-motion state space, with application-specific constraints and dynamics applied in their respective domain modules.
 
 ---
 
@@ -134,7 +134,7 @@ $$\tau_a \dot{\mathbf{a}}_c + \mathbf{a}_c = \mathbf{u}_{\text{cmd}}, \quad \|\d
 
 ## 7. Domain Applications
 
-### 7.1 Missile Homing Intercept (`lvguidance.applications.missile_homing`)
+### 7.1 Missile Homing Intercept (`relguide.applications.missile_homing`)
 - **Objectives:** Minimum terminal miss distance (CPA), high-g maneuverability.
 - **Target Maneuver Library:**
   - `NonManeuveringTarget`: Constant velocity.
@@ -143,7 +143,7 @@ $$\tau_a \dot{\mathbf{a}}_c + \mathbf{a}_c = \mathbf{u}_{\text{cmd}}, \quad \|\d
   - `BallisticTarget`: Re-entry gravity + aerodynamic drag deceleration.
 - **Evaluation:** Closest Point of Approach (CPA), Circular Error Probable (CEP), control effort.
 
-### 7.2 Orbital Rendezvous (`lvguidance.applications.orbital_rendezvous`)
+### 7.2 Orbital Rendezvous (`relguide.applications.orbital_rendezvous`)
 - **Objectives:** Soft docking ($R \le 2\text{ m}$, $v_{\text{rel}} \le 0.3\text{ m/s}$) with minimum fuel expenditure.
 - **Environment:** Central two-body Earth gravity, LVLH rotating frame, exact differential gravity feedforward.
 - **Evaluation:** Capture success, contact velocity, $\Delta V$ propellant use.

@@ -2,7 +2,7 @@
 
 This document provides a complete, ground-up mathematical derivation of the **Clohessy-Wiltshire (CW)** equations—also known as the **Hill-Clohessy-Wiltshire (HCW)** equations—which govern the relative motion of a chaser spacecraft with respect to a target spacecraft in a circular orbit.
 
-The equations are derived from fundamental Newtonian mechanics, rotating-frame kinematics (the Transport Theorem), and first-order gravitational Taylor expansions. The full analytical closed-form solution and the resulting State Transition Matrix (STM) implemented in [`lvguidance.core.astrodynamics.clohessy_wiltshire`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/core/astrodynamics/clohessy_wiltshire.py) are also derived step-by-step.
+The equations are derived from fundamental Newtonian mechanics, rotating-frame kinematics (the Transport Theorem), and first-order gravitational Taylor expansions. The full analytical closed-form solution and the resulting State Transition Matrix (STM) implemented in [`relguide.core.astrodynamics.clohessy_wiltshire`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/core/astrodynamics/clohessy_wiltshire.py) are also derived step-by-step.
 
 ---
 
@@ -357,7 +357,7 @@ Using Zero-Order Hold (ZOH) over sample time $\Delta t$, the discrete model is:
 $$\mathbf{X}_{k+1} = A_d \mathbf{X}_k + B_d \mathbf{u}_k$$
 where $A_d = \Phi(\Delta t) = e^{A\Delta t}$ and $B_d = \int_0^{\Delta t} e^{A s} B ds$.
 
-This discrete model forms the basis for the **LQR controller** (via the Discrete Algebraic Riccati Equation) and the **Constrained MPC controller** implemented in `lvguidance`.
+This discrete model forms the basis for the **LQR controller** (via the Discrete Algebraic Riccati Equation) and the **Constrained MPC controller** implemented in `relguide`.
 
 ---
 
@@ -376,15 +376,15 @@ While the CW model is foundational, its validity boundaries must be observed in 
 
 ## 11. Code Implementation Mapping
 
-The theoretical equations derived above are implemented throughout `lvguidance`:
+The theoretical equations derived above are implemented throughout `relguide`:
 
 | Mathematical Concept | Code Function / Class | File Location |
 |---|---|---|
-| Mean motion $n = \sqrt{\mu / r_0^3}$ | `mean_motion()` | [`lvguidance/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/core/astrodynamics/clohessy_wiltshire.py#L19-L22) |
-| System matrices $A, B$ | `cw_matrices()` | [`lvguidance/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/core/astrodynamics/clohessy_wiltshire.py#L24-L39) |
-| State Transition Matrix $\Phi(t)$ | `cw_stm()` | [`lvguidance/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/core/astrodynamics/clohessy_wiltshire.py#L41-L64) |
-| ZOH Discretization $A_d, B_d$ | `discretize_zoh()` | [`lvguidance/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/core/astrodynamics/clohessy_wiltshire.py#L66-L74) |
-| Targeting velocity $\mathbf{v}_0^+$ | `cw_required_velocity()` | [`lvguidance/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/core/astrodynamics/clohessy_wiltshire.py#L76-L90) |
-| Two-Impulse Transfer | `TwoImpulseCW` | [`lvguidance/applications/orbital_rendezvous/impulsive_cw.py`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/applications/orbital_rendezvous/impulsive_cw.py) |
-| Optimal State Feedback | `LQRController` | [`lvguidance/applications/orbital_rendezvous/controllers.py`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/applications/orbital_rendezvous/controllers.py) |
-| Receding Horizon Control | `MPCController` | [`lvguidance/applications/orbital_rendezvous/controllers.py`](file:///e:/2026-11/launch_vehicle_guidance_law/lvguidance/applications/orbital_rendezvous/controllers.py) |
+| Mean motion $n = \sqrt{\mu / r_0^3}$ | `mean_motion()` | [`relguide/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/core/astrodynamics/clohessy_wiltshire.py#L19-L22) |
+| System matrices $A, B$ | `cw_matrices()` | [`relguide/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/core/astrodynamics/clohessy_wiltshire.py#L24-L39) |
+| State Transition Matrix $\Phi(t)$ | `cw_stm()` | [`relguide/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/core/astrodynamics/clohessy_wiltshire.py#L41-L64) |
+| ZOH Discretization $A_d, B_d$ | `discretize_zoh()` | [`relguide/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/core/astrodynamics/clohessy_wiltshire.py#L66-L74) |
+| Targeting velocity $\mathbf{v}_0^+$ | `cw_required_velocity()` | [`relguide/core/astrodynamics/clohessy_wiltshire.py`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/core/astrodynamics/clohessy_wiltshire.py#L76-L90) |
+| Two-Impulse Transfer | `TwoImpulseCW` | [`relguide/applications/orbital_rendezvous/impulsive_cw.py`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/applications/orbital_rendezvous/impulsive_cw.py) |
+| Optimal State Feedback | `LQRController` | [`relguide/applications/orbital_rendezvous/controllers.py`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/applications/orbital_rendezvous/controllers.py) |
+| Receding Horizon Control | `MPCController` | [`relguide/applications/orbital_rendezvous/controllers.py`](file:///e:/2026-11/launch_vehicle_guidance_law/relguide/applications/orbital_rendezvous/controllers.py) |

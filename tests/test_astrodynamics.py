@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.linalg import expm
 
-from lvguidance.core.astrodynamics import (
+from relguide.core.astrodynamics import (
     MU_EARTH,
     cw_matrices,
     cw_required_velocity,

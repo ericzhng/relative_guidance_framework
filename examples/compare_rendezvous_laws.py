@@ -22,7 +22,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from lvguidance.applications.orbital_rendezvous import (
+from relguide.applications.orbital_rendezvous import (
     ImpulsiveGlideslope,
     LambertTransfer,
     LQRController,
@@ -42,11 +42,11 @@ from lvguidance.applications.orbital_rendezvous import (
     run_comparison,
     simulate_rendezvous,
 )
-from lvguidance.applications.orbital_rendezvous.metrics import (
+from relguide.applications.orbital_rendezvous.metrics import (
     format_rendezvous_table,
 )
-from lvguidance.core.simulation.metrics import format_table
-from lvguidance.core.visualization import (
+from relguide.core.simulation.metrics import format_table
+from relguide.core.visualization import (
     plot_comparison,
     plot_engagement,
     plot_metric_bars,

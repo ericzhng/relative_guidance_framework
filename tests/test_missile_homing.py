@@ -2,7 +2,7 @@
 
 import pytest
 
-from lvguidance.applications.missile_homing import (
+from relguide.applications.missile_homing import (
     BallisticTarget,
     MissileScenario,
     NonManeuveringTarget,
@@ -11,7 +11,7 @@ from lvguidance.applications.missile_homing import (
     monte_carlo_missile,
     simulate_missile,
 )
-from lvguidance.core.laws.proportional_nav import (
+from relguide.core.laws.proportional_nav import (
     AugmentedProportionalNavigation,
     TrueProportionalNavigation,
 )
