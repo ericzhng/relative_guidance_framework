@@ -1,10 +1,36 @@
-"""lvguidance: rendezvous guidance laws for a launch vehicle and a moving orbital target.
+"""lvguidance: Unified relative guidance framework for missiles and orbital vehicles."""
 
-Subpackages:
-    dynamics: Two-body orbital dynamics, reference frames and propagation.
-    guidance: Guidance laws, from basic pursuit to optimal and sliding-mode laws.
-    simulation: Scenario definition, closed-loop engine, results and metrics.
-    visualization: Trajectory, time-history and comparison plots, plus animation.
-"""
+from lvguidance import applications, core
+from lvguidance.applications.missile_homing import (
+    MissileScenario,
+    default_missile_laws,
+    simulate_missile,
+)
+from lvguidance.applications.orbital_rendezvous import (
+    OrbitalScenario,
+    default_rendezvous_laws,
+    simulate_rendezvous,
+)
+from lvguidance.core import (
+    AutopilotModel,
+    GuidanceLaw,
+    GuidanceState,
+    SeekerModel,
+    SimulationResult,
+)
 
-__version__ = "0.1.0"
+__all__ = [
+    "AutopilotModel",
+    "GuidanceLaw",
+    "GuidanceState",
+    "MissileScenario",
+    "OrbitalScenario",
+    "SeekerModel",
+    "SimulationResult",
+    "applications",
+    "core",
+    "default_missile_laws",
+    "default_rendezvous_laws",
+    "simulate_missile",
+    "simulate_rendezvous",
+]
