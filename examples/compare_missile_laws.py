@@ -59,7 +59,9 @@ def main() -> None:
     print("\n--- Monte Carlo Dispersion (50 runs with heading error noise) ---")
     for law in laws[:3]:
         mc = monte_carlo_missile(law, scenario, num_runs=20, heading_error_std_deg=3.0)
-        print(f"{law.name:<32}: Mean Miss = {mc['mean_miss_m']:.2f} m, CEP50 = {mc['cep_50_m']:.2f} m")
+        mean_m = mc['mean_miss_m']
+        cep_m = mc['cep_50_m']
+        print(f"{law.name:<32}: Mean Miss = {mean_m:.2f} m, CEP50 = {cep_m:.2f} m")
 
     print(f"\nMissile figures saved to {OUT}")
 

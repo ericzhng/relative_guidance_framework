@@ -17,7 +17,9 @@ Vec = NDArray[np.float64]
 
 def _get_x(state: GuidanceState | Vec) -> Vec:
     if isinstance(state, GuidanceState):
-        return state.lvlh_state if state.lvlh_state is not None else np.concatenate((state.rel_pos, state.rel_vel))
+        if state.lvlh_state is not None:
+            return state.lvlh_state
+        return np.concatenate((state.rel_pos, state.rel_vel))
     return np.asarray(state, dtype=float)
 
 
@@ -65,3 +67,7 @@ class ImpulsiveGlideslope(GuidanceLaw):
         waypoint = self._start + frac * (self._goal[:3] - self._start)
         v_req = cw_required_velocity(self._n, leg, x[:3], waypoint)
         return v_req - x[3:]
+
+    def command(self, state: GuidanceState) -> Vec:
+        """Continuous acceleration command (zero for impulsive transfers)."""
+        return np.zeros(3)

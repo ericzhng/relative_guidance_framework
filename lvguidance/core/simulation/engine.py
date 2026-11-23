@@ -156,7 +156,7 @@ def simulate_loop(
 
     return SimulationResult(
         law_name=law.name,
-        t=np.array(times),
+        t=np.asarray(times, dtype=np.float64),
         target=np.array(tgt_hist),
         chaser=np.array(chs_hist),
         accel=np.array(acc_hist),
@@ -202,7 +202,11 @@ def simulate_ivp(
     grid = np.unique(
         np.round(np.concatenate((np.arange(0.0, duration, dt), burn_times, [duration])), 6)
     )
-    burn_idx = {int(np.argmin(np.abs(grid - tb))) for tb in burn_times} if len(burn_times) > 0 else set()
+    burn_idx = (
+        {int(np.argmin(np.abs(grid - tb))) for tb in burn_times}
+        if len(burn_times) > 0
+        else set()
+    )
 
     r_c, v_c = lvlh_to_eci(target_r0, target_v0, chaser_rel0)
     y = np.concatenate((target_r0, target_v0, r_c, v_c))
@@ -268,7 +272,7 @@ def simulate_ivp(
     max_acc = float(np.max(np.linalg.norm(accels, axis=1))) if len(accels) > 0 else 0.5
     return SimulationResult(
         law_name=law.name,
-        t=grid,
+        t=np.asarray(grid, dtype=np.float64),
         target=target_hist,
         chaser=chaser_hist,
         accel=accels,

@@ -94,7 +94,11 @@ class MPCController(GuidanceLaw):
 
     def command(self, state: GuidanceState) -> Vec:
         """Solve bounded least squares and return first control acceleration."""
-        x = state.lvlh_state if state.lvlh_state is not None else np.concatenate((state.rel_pos, state.rel_vel))
+        x = (
+            state.lvlh_state
+            if state.lvlh_state is not None
+            else np.concatenate((state.rel_pos, state.rel_vel))
+        )
         err = x - self._goal
         mat = np.vstack((self._cost_state @ self._forced, self._cost_input))
         rhs = np.concatenate(

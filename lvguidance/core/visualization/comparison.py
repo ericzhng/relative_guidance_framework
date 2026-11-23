@@ -34,7 +34,9 @@ def plot_comparison(
         ax_spd.plot(res.t, res.rel_speed, color=c)
 
     ax_path.scatter(0, 0, color=TARGET_COLOR, marker="*", s=140, zorder=5, label="Target")
-    ax_path.set(xlabel="Cross-range / Y [km]", ylabel="Down-range / X [km]", title="Relative Trajectory")
+    ax_path.set(
+        xlabel="Cross-range / Y [km]", ylabel="Down-range / X [km]", title="Relative Trajectory"
+    )
     ax_path.legend()
     ax_rng.set(xlabel="Time [s]", ylabel="Range [m]", title="Distance to Target")
     ax_phase.set(xlabel="Range [km]", ylabel="Closing speed [m/s]", title="Closing Speed Profile")

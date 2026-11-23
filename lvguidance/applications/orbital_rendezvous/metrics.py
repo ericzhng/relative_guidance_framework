@@ -13,6 +13,18 @@ from lvguidance.core.simulation.result import SimulationResult
 
 @dataclass(frozen=True)
 class RendezvousMetrics:
+    """Summary figures of merit for one rendezvous run.
+
+    Attributes:
+        total_delta_v: Sum of impulsive burns plus integrated continuous thrust [m/s].
+        impulsive_delta_v: Sum of impulsive burn magnitudes [m/s].
+        continuous_delta_v: Integral of continuous acceleration over time [m/s].
+        final_position_error: Distance to target at the end [m].
+        final_velocity_error: Relative speed at the end [m/s].
+        max_acceleration: Peak continuous thrust acceleration norm [m/s^2].
+        num_burns: Number of impulsive burns applied.
+    """
+
     total_delta_v: float
     impulsive_delta_v: float
     continuous_delta_v: float
@@ -23,6 +35,7 @@ class RendezvousMetrics:
 
 
 def compute_metrics(result: SimulationResult) -> RendezvousMetrics:
+    """Compute summary metrics for a rendezvous simulation run."""
     dt = np.diff(result.t, prepend=result.t[0])
     cont_dv = float(np.sum(result.accel_norm * dt))
     imp_dv = sum(float(np.linalg.norm(b.dv)) for b in result.burns)
@@ -43,6 +56,7 @@ def compute_metrics(result: SimulationResult) -> RendezvousMetrics:
 
 
 def format_table(results_or_entries: Sequence[Any], capture_radius: float = 2.0) -> str:
+    """Render a comprehensive comparison table for rendezvous runs."""
     header = (
         f"{'Algorithm':<28}{'Captured':>9}{'Time [s]':>10}{'Pos.err [m]':>13}"
         f"{'Vel.err [m/s]':>15}{'Total Delta-v [m/s]':>20}{'Burns':>7}"

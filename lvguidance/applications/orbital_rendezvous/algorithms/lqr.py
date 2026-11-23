@@ -27,7 +27,8 @@ class LQRController(GuidanceLaw):
     """Infinite-horizon discrete-time LQR on the Clohessy-Wiltshire state space.
 
     Gains are computed by solving the discrete algebraic Riccati equation (DARE)
-    and continuous acceleration commands are saturated per axis: a = clip(-K(x - goal), -a_max, a_max).
+    and continuous acceleration commands are saturated per axis:
+    a = clip(-K(x - goal), -a_max, a_max).
 
     Args:
         pos_tol: Position error scaling for one unit of cost [m].
@@ -69,5 +70,9 @@ class LQRController(GuidanceLaw):
 
     def command(self, state: GuidanceState) -> Vec:
         """Compute continuous acceleration in LVLH frame: -K (x - goal)."""
-        x = state.lvlh_state if state.lvlh_state is not None else np.concatenate((state.rel_pos, state.rel_vel))
+        x = (
+            state.lvlh_state
+            if state.lvlh_state is not None
+            else np.concatenate((state.rel_pos, state.rel_vel))
+        )
         return np.clip(-self._gain @ (x - self._goal), -self.a_max, self.a_max)

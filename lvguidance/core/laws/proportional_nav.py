@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 from lvguidance.core.base import GuidanceLaw, GuidanceState, Vec
@@ -135,7 +137,11 @@ class BiasedProportionalNavigation(GuidanceLaw):
 
         if state.chaser_vel is not None and np.linalg.norm(state.chaser_vel) > 1e-3:
             v_hat = state.chaser_vel / np.linalg.norm(state.chaser_vel)
-            t_go = state.t_go if state.t_final is not None else estimate_t_go(state.range, state.closing_speed)
+            t_go = (
+                state.t_go
+                if state.t_final is not None
+                else estimate_t_go(state.range, state.closing_speed)
+            )
             t_go = max(t_go, self.t_go_min)
 
             # Target direction: if not specified, default to line-of-sight

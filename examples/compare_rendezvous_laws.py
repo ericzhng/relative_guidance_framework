@@ -24,8 +24,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from lvguidance.applications.orbital_rendezvous import (
     ImpulsiveGlideslope,
-    LQRController,
     LambertTransfer,
+    LQRController,
     MPCController,
     OrbitalScenario,
     TwoImpulseCW,
@@ -64,7 +64,10 @@ def main() -> None:
     # ---------------------------------------------------------
     print("=== 1. Continuous Orbital Guidance Laws (RK4 Simulation) ===")
     scenario_rk4 = OrbitalScenario()
-    results_rk4 = [simulate_rendezvous(law, scenario_rk4, method="rk4") for law in default_rendezvous_laws()]
+    results_rk4 = [
+        simulate_rendezvous(law, scenario_rk4, method="rk4")
+        for law in default_rendezvous_laws()
+    ]
 
     print(format_table(results_rk4, scenario_rk4.capture_radius))
 

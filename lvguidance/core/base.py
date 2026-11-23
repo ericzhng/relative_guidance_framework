@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from typing import Any
 
@@ -27,6 +27,7 @@ class GuidanceLaw(ABC):
     name: str = "guidance"
     control_dt: float | None = None
 
+    @abstractmethod
     def command(self, state: GuidanceState) -> Vec:
         """Compute the continuous acceleration command.
 
@@ -36,9 +37,9 @@ class GuidanceLaw(ABC):
         Returns:
             Command acceleration vector ``u`` [m/s^2].
         """
-        return np.zeros(3)
+        ...
 
-    def reset(self, scenario: Any = None) -> None:
+    def reset(self, scenario: Any = None) -> None:  # noqa: B027
         """Clear internal memory before a new simulation run."""
         pass
 

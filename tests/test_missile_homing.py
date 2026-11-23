@@ -1,11 +1,9 @@
 """Tests for missile homing intercept application."""
 
-import numpy as np
 import pytest
 
 from lvguidance.applications.missile_homing import (
     BallisticTarget,
-    ConstantTurnTarget,
     MissileScenario,
     NonManeuveringTarget,
     WeavingTarget,
@@ -13,13 +11,10 @@ from lvguidance.applications.missile_homing import (
     monte_carlo_missile,
     simulate_missile,
 )
-from lvguidance.core.laws.optimal import OptimalHomingGuidance
 from lvguidance.core.laws.proportional_nav import (
     AugmentedProportionalNavigation,
-    PureProportionalNavigation,
     TrueProportionalNavigation,
 )
-from lvguidance.core.laws.sliding_mode import SlidingModeHomingGuidance
 
 
 @pytest.mark.parametrize("law", default_missile_laws(), ids=lambda law: law.name)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+
 import numpy as np
 from numpy.typing import NDArray
 from scipy.linalg import expm
@@ -86,4 +87,4 @@ def cw_required_velocity(
             f"CW targeting is singular for transfer time {tau:.1f} s "
             "(n*tau is a multiple of 2*pi); choose a different duration"
         )
-    return np.linalg.solve(phi_rv, r_goal - phi[:3, :3] @ r0)
+    return np.asarray(np.linalg.solve(phi_rv, r_goal - phi[:3, :3] @ r0), dtype=np.float64)

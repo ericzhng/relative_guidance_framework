@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import NDArray
 
+from lvguidance.applications.orbital_rendezvous.scenario import circular_state, gravity
 from lvguidance.core.astrodynamics import (
     MU_EARTH,
     R_EARTH,
@@ -20,7 +21,6 @@ from lvguidance.core.astrodynamics import (
     propagate_kepler,
     solve_lambert,
 )
-from lvguidance.applications.orbital_rendezvous.scenario import circular_state, gravity
 
 Vec = NDArray[np.float64]
 

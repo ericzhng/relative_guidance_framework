@@ -18,7 +18,9 @@ Vec = NDArray[np.float64]
 
 def _get_x(state: GuidanceState | Vec) -> Vec:
     if isinstance(state, GuidanceState):
-        return state.lvlh_state if state.lvlh_state is not None else np.concatenate((state.rel_pos, state.rel_vel))
+        if state.lvlh_state is not None:
+            return state.lvlh_state
+        return np.concatenate((state.rel_pos, state.rel_vel))
     return np.asarray(state, dtype=float)
 
 
@@ -64,3 +66,7 @@ class LambertTransfer(GuidanceLaw):
 
         v1, _ = solve_lambert(r_c, r_goal, tf - t, mu=mu, normal=normal)
         return lvlh_dcm(r_t, v_t) @ (v1 - v_c)
+
+    def command(self, state: GuidanceState) -> Vec:
+        """Continuous acceleration command (zero for impulsive transfers)."""
+        return np.zeros(3)

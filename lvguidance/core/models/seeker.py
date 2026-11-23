@@ -98,7 +98,9 @@ class SeekerModel:
         look_angle = compute_look_angle(chaser_vel, rel_pos)
         return bool(look_angle <= self.fov_limit_rad)
 
-    def measure_los(self, rel_pos: Vec, dt: float = 0.01, filter_output: bool = False) -> tuple[Vec, Vec]:
+    def measure_los(
+        self, rel_pos: Vec, dt: float = 0.01, filter_output: bool = False
+    ) -> tuple[Vec, Vec]:
         """Measure unit LOS and optionally compute filtered LOS rate.
 
         Args:

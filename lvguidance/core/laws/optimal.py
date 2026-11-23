@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 from lvguidance.core.base import GuidanceLaw, GuidanceState, Vec
@@ -108,7 +110,11 @@ class AdaptiveTgoGuidance(GuidanceLaw):
     def command(self, state: GuidanceState) -> Vec:
         """Compute the adaptive t_go optimal rendezvous command."""
         tau = estimate_t_go(
-            state.range, state.closing_speed, rendezvous=True, accel_nom=self.a_nom, t_go_min=self.t_go_min
+            state.range,
+            state.closing_speed,
+            rendezvous=True,
+            accel_nom=self.a_nom,
+            t_go_min=self.t_go_min,
         )
         return _optimal_command(state.rel_pos, state.rel_vel, tau, k_r=6.0, k_v=2.0)
 
@@ -138,4 +144,6 @@ class TerminalVelocityGuidance(GuidanceLaw):
             self._axis = state.los.copy()
         tau = max(state.t_go, self.t_go_min)
         v_final = -self.v_dock * self._axis
-        return _optimal_command(state.rel_pos, state.rel_vel, tau, k_r=6.0, k_v=2.0, v_final=v_final)
+        return _optimal_command(
+            state.rel_pos, state.rel_vel, tau, k_r=6.0, k_v=2.0, v_final=v_final
+        )

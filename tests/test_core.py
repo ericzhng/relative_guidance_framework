@@ -3,7 +3,6 @@
 import numpy as np
 import pytest
 
-from lvguidance.core.base import GuidanceLaw
 from lvguidance.core.kinematics import (
     compute_closing_speed,
     compute_look_angle,
@@ -14,26 +13,15 @@ from lvguidance.core.kinematics import (
     estimate_t_go,
 )
 from lvguidance.core.laws.optimal import (
-    AdaptiveTgoGuidance,
-    OptimalHomingGuidance,
-    TerminalVelocityGuidance,
     ZemZevGuidance,
 )
-from lvguidance.core.laws.phased import PhasedGuidance
 from lvguidance.core.laws.proportional_nav import (
     AugmentedProportionalNavigation,
     BiasedProportionalNavigation,
-    PureProportionalNavigation,
     TrueProportionalNavigation,
 )
 from lvguidance.core.laws.pursuit import (
     ProportionalDerivative,
-    TerminalApproachGuidance,
-    VelocityPursuit,
-)
-from lvguidance.core.laws.sliding_mode import (
-    SlidingModeGuidance,
-    SlidingModeHomingGuidance,
 )
 from lvguidance.core.models.autopilot import AutopilotModel
 from lvguidance.core.models.seeker import AlphaBetaFilter, SeekerModel

@@ -6,8 +6,8 @@ import pytest
 from lvguidance.applications.orbital_rendezvous import (
     MU_EARTH,
     ImpulsiveGlideslope,
-    LQRController,
     LambertTransfer,
+    LQRController,
     MPCController,
     OrbitalScenario,
     TwoImpulseCW,
@@ -18,7 +18,6 @@ from lvguidance.applications.orbital_rendezvous import (
     simulate_rendezvous,
     to_lvlh,
 )
-from lvguidance.core.laws.optimal import AdaptiveTgoGuidance, ZemZevGuidance
 from lvguidance.core.laws.phased import PhasedGuidance
 from lvguidance.core.laws.pursuit import TerminalApproachGuidance
 from lvguidance.core.laws.sliding_mode import SlidingModeGuidance

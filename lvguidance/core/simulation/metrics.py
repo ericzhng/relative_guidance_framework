@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-import numpy as np
-
 from lvguidance.core.simulation.result import SimulationResult
 
 
-def summarize(result: SimulationResult, capture_radius: float = 2.0) -> dict[str, float | str | bool]:
+def summarize(
+    result: SimulationResult, capture_radius: float = 2.0
+) -> dict[str, float | str | bool]:
     """Compute performance summary statistics of a guidance run.
 
     Args:

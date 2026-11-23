@@ -9,7 +9,6 @@ from lvguidance.core.astrodynamics import (
     cw_matrices,
     cw_required_velocity,
     cw_stm,
-    discretize_zoh,
     eci_to_lvlh,
     lvlh_to_eci,
     mean_motion,

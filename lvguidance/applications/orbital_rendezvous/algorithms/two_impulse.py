@@ -17,7 +17,9 @@ Vec = NDArray[np.float64]
 
 def _get_x(state: GuidanceState | Vec) -> Vec:
     if isinstance(state, GuidanceState):
-        return state.lvlh_state if state.lvlh_state is not None else np.concatenate((state.rel_pos, state.rel_vel))
+        if state.lvlh_state is not None:
+            return state.lvlh_state
+        return np.concatenate((state.rel_pos, state.rel_vel))
     return np.asarray(state, dtype=float)
 
 
@@ -54,3 +56,7 @@ class TwoImpulseCW(GuidanceLaw):
             v_req = cw_required_velocity(self._n, self._tf - t, x[:3], self._goal[:3])
             return v_req - x[3:]
         return self._goal[3:] - x[3:]
+
+    def command(self, state: GuidanceState) -> Vec:
+        """Continuous acceleration command (zero for impulsive transfers)."""
+        return np.zeros(3)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 from lvguidance.applications.missile_homing.scenario import MissileScenario
@@ -55,7 +57,7 @@ def monte_carlo_missile(
     num_runs: int = 50,
     heading_error_std_deg: float = 5.0,
     seed: int = 42,
-) -> dict[str, float | list[float]]:
+) -> dict[str, Any]:
     """Execute Monte Carlo dispersion analysis on a missile homing law.
 
     Args:

@@ -79,7 +79,7 @@ class OrbitalScenario:
         max_accel: float = 0.05,
         dt: float = 10.0,
         mu: float = MU_EARTH,
-    ) -> "OrbitalScenario":
+    ) -> OrbitalScenario:
         """Build a scenario around a circular equatorial target orbit from LVLH offset.
 
         Args:

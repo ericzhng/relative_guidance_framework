@@ -33,7 +33,8 @@ class MissileScenario:
 
     name: str = "Missile Intercept"
     target_pos0: Vec = field(default_factory=lambda: np.array([10000.0, 2000.0, 1000.0]))
-    target_vel0: Vec = field(default_factory=lambda: np.array([-300.0, 50.0, 0.0]))  # Transonic target
+    # Transonic target velocity
+    target_vel0: Vec = field(default_factory=lambda: np.array([-300.0, 50.0, 0.0]))
     missile_pos0: Vec = field(default_factory=lambda: np.array([0.0, 0.0, 0.0]))
     missile_speed0: float = 800.0  # Mach 2.4+ missile
     heading_error_deg: float = 10.0

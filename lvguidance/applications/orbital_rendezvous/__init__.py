@@ -2,8 +2,8 @@
 
 from lvguidance.applications.orbital_rendezvous.algorithms import (
     ImpulsiveGlideslope,
-    LQRController,
     LambertTransfer,
+    LQRController,
     MPCController,
     TwoImpulseCW,
 )

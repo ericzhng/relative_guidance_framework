@@ -1,10 +1,11 @@
-"""Orbital rendezvous visualization: 2-D/3-D trajectories, LOS sphere, Earth orbit view, and animations."""
+"""Orbital rendezvous visualization: 2-D/3-D trajectories, LOS sphere, and Earth orbit views."""
 
 from __future__ import annotations
 
 import logging
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,8 +13,6 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 from matplotlib.figure import Figure
 
 from lvguidance.core.astrodynamics.constants import R_EARTH
-from lvguidance.core.astrodynamics.frames import lvlh_to_eci
-from lvguidance.core.astrodynamics.kepler import propagate_kepler
 from lvguidance.core.simulation.result import SimulationResult
 
 logger = logging.getLogger(__name__)
