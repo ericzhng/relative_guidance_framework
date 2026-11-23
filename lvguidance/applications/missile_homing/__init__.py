@@ -6,6 +6,7 @@ from lvguidance.applications.missile_homing.runner import (
 )
 from lvguidance.applications.missile_homing.scenario import MissileScenario
 from lvguidance.applications.missile_homing.targets import (
+    BallisticTarget,
     ConstantTurnTarget,
     NonManeuveringTarget,
     TargetManeuver,
@@ -15,12 +16,14 @@ from lvguidance.core.base import GuidanceLaw
 from lvguidance.core.laws.optimal import OptimalHomingGuidance
 from lvguidance.core.laws.proportional_nav import (
     AugmentedProportionalNavigation,
+    BiasedProportionalNavigation,
     PureProportionalNavigation,
     TrueProportionalNavigation,
 )
 from lvguidance.core.laws.sliding_mode import SlidingModeHomingGuidance
 
 __all__ = [
+    "BallisticTarget",
     "ConstantTurnTarget",
     "MissileScenario",
     "NonManeuveringTarget",
@@ -40,5 +43,6 @@ def default_missile_laws() -> list[GuidanceLaw]:
         PureProportionalNavigation(n_gain=3.0),
         AugmentedProportionalNavigation(n_gain=3.0),
         OptimalHomingGuidance(),
+        BiasedProportionalNavigation(),
         SlidingModeHomingGuidance(),
     ]

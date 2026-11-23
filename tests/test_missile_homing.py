@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from lvguidance.applications.missile_homing import (
+    BallisticTarget,
     ConstantTurnTarget,
     MissileScenario,
     NonManeuveringTarget,
@@ -43,6 +44,17 @@ def test_apn_intercepts_weaving_target():
     )
     res = simulate_missile(AugmentedProportionalNavigation(n_gain=4.0), scenario)
     assert res.miss_distance <= 2.5
+
+
+def test_ballistic_target_intercept():
+    # Test intercepting a decelerating ballistic target
+    scenario = MissileScenario(
+        heading_error_deg=4.0,
+        target_maneuver=BallisticTarget(),
+        capture_radius=2.0,
+    )
+    res = simulate_missile(TrueProportionalNavigation(n_gain=3.0), scenario)
+    assert res.miss_distance <= 2.0
 
 
 def test_monte_carlo_runner():

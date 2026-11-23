@@ -22,6 +22,7 @@ from lvguidance.core.laws.optimal import (
 from lvguidance.core.laws.phased import PhasedGuidance
 from lvguidance.core.laws.proportional_nav import (
     AugmentedProportionalNavigation,
+    BiasedProportionalNavigation,
     PureProportionalNavigation,
     TrueProportionalNavigation,
 )
@@ -35,7 +36,7 @@ from lvguidance.core.laws.sliding_mode import (
     SlidingModeHomingGuidance,
 )
 from lvguidance.core.models.autopilot import AutopilotModel
-from lvguidance.core.models.seeker import SeekerModel
+from lvguidance.core.models.seeker import AlphaBetaFilter, SeekerModel
 from lvguidance.core.state import GuidanceState
 
 
@@ -90,8 +91,8 @@ def test_autopilot_saturation_and_lag():
     assert np.linalg.norm(a1) == pytest.approx(50.0, abs=1e-3)
 
 
-def test_seeker_fov():
-    seeker = SeekerModel(fov_limit_deg=45.0)
+def test_seeker_fov_and_filter():
+    seeker = SeekerModel(fov_limit_deg=45.0, noise_std_rad=0.01, seed=42)
     chaser_vel = np.array([100.0, 0.0, 0.0])
 
     in_pos = np.array([100.0, 50.0, 0.0])  # ~26.5 deg look angle
@@ -99,6 +100,13 @@ def test_seeker_fov():
 
     assert seeker.check_fov(chaser_vel, in_pos) is True
     assert seeker.check_fov(chaser_vel, out_pos) is False
+
+    # Filter smoothing test
+    ab = AlphaBetaFilter(alpha=0.6, beta=0.2)
+    z1 = np.array([1.0, 0.0, 0.0])
+    los_filt, los_rate = ab.update(z1, dt=0.01)
+    assert np.allclose(los_filt, z1)
+    assert np.allclose(los_rate, 0.0)
 
 
 def test_guidance_laws_zero_command_on_ideal_state():
@@ -108,3 +116,4 @@ def test_guidance_laws_zero_command_on_ideal_state():
     assert np.allclose(TrueProportionalNavigation().command(state), 0.0)
     assert np.allclose(AugmentedProportionalNavigation().command(state), 0.0)
     assert np.allclose(ProportionalDerivative().command(state), 0.0)
+    assert np.allclose(BiasedProportionalNavigation().command(state), 0.0)

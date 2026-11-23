@@ -87,3 +87,24 @@ class WeavingTarget(TargetManeuver):
         """Compute weaving acceleration."""
         val = self.amplitude * float(np.sin(self.frequency * t + self.phase))
         return val * self.direction
+
+
+class BallisticTarget(TargetManeuver):
+    """Ballistic re-entry target under gravity and atmospheric drag deceleration.
+
+    Args:
+        drag_coeff: Velocity-squared drag deceleration factor [1/m] (e.g. 1e-4).
+        gravity_mps2: Downward gravitational acceleration [m/s^2].
+    """
+
+    def __init__(self, drag_coeff: float = 5e-5, gravity_mps2: float = 9.81) -> None:
+        self.drag_coeff = drag_coeff
+        self.gravity_mps2 = gravity_mps2
+
+    def acceleration(self, t: float, target_state: Vec) -> Vec:
+        """Compute ballistic drag plus gravity acceleration."""
+        vel = target_state[3:]
+        speed = float(np.linalg.norm(vel))
+        drag_accel = -self.drag_coeff * speed * vel
+        grav_accel = np.array([0.0, 0.0, -self.gravity_mps2])
+        return drag_accel + grav_accel

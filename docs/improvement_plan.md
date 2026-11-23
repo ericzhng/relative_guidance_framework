@@ -259,21 +259,21 @@ gantt
 
 - [x] **Milestone 0: Baseline Health**
   - [x] Add `pythonpath = ["."]` in `pyproject.toml` so test discovery runs cleanly.
-- [ ] **Milestone 1: Core Framework Architecture**
-  - [ ] Implement `lvguidance.core.kinematics` with robust 3D LOS and angular rate math.
-  - [ ] Implement `lvguidance.core.models.autopilot` (lag, rate limits) and `seeker` (FOV, noise).
-  - [ ] Standardize `GuidanceState` to support closing speed, LOS rate vector, and target acceleration.
-- [ ] **Milestone 2: Guidance Law Portfolio**
-  - [ ] Implement `ProportionalNavigation` (TPN, PPN, APN).
-  - [ ] Implement generalized `OptimalGuidance` (OGL for intercept $N'=3$, ZEM/ZEV for docking $N'=6$).
-  - [ ] Maintain `SlidingModeGuidance`, `GlideslopeGuidance`, and `PhasedGuidance`.
-- [ ] **Milestone 3: Domain Applications**
-  - [ ] Package `applications.orbital_rendezvous` with Keplerian orbits and LVLH transformations.
-  - [ ] Package `applications.missile_homing` with maneuvering target models and miss distance metrics.
-- [ ] **Milestone 4: Verification & Examples**
-  - [ ] Add unit tests for all core laws and subsystem models.
-  - [ ] Provide `examples/compare_missile_laws.py` and `examples/compare_rendezvous_laws.py`.
-  - [ ] Update theoretical documentation in `docs/guidance_theory.md`.
+- [x] **Milestone 1: Core Framework Architecture**
+  - [x] Implement `lvguidance.core.kinematics` with robust 3D LOS and angular rate math.
+  - [x] Implement `lvguidance.core.models.autopilot` (lag, rate limits) and `seeker` (FOV, noise, alpha-beta filter).
+  - [x] Standardize `GuidanceState` to support closing speed, LOS rate vector, and target acceleration.
+- [x] **Milestone 2: Guidance Law Portfolio**
+  - [x] Implement `ProportionalNavigation` (TPN, PPN, APN, BPN / IACG).
+  - [x] Implement generalized `OptimalGuidance` (OGL for intercept $N'=3$, ZEM/ZEV for docking $N'=6$).
+  - [x] Maintain `SlidingModeGuidance`, `GlideslopeGuidance`, and `PhasedGuidance`.
+- [x] **Milestone 3: Domain Applications**
+  - [x] Package `applications.orbital_rendezvous` with Keplerian orbits and LVLH transformations.
+  - [x] Package `applications.missile_homing` with maneuvering target models (weaving, constant g, ballistic) and miss distance metrics.
+- [x] **Milestone 4: Verification & Examples**
+  - [x] Add unit tests for all core laws and subsystem models.
+  - [x] Provide `examples/compare_missile_laws.py` and `examples/compare_rendezvous_laws.py`.
+  - [x] Update theoretical documentation in `docs/guidance_theory.md`.
 
 ---
 

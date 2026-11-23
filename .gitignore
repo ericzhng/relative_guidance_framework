@@ -28,8 +28,8 @@ wheels/
 htmlcov/
 
 # Outputs / Visualizations (optional cache)
-# outputs/*.png
-# outputs/*.gif
+outputs/**/*.png
+outputs/**/*.gif
 
 # IDE & OS
 .vscode/

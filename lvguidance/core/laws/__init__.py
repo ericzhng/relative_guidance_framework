@@ -9,6 +9,7 @@ from lvguidance.core.laws.optimal import (
 from lvguidance.core.laws.phased import PhasedGuidance
 from lvguidance.core.laws.proportional_nav import (
     AugmentedProportionalNavigation,
+    BiasedProportionalNavigation,
     PureProportionalNavigation,
     TrueProportionalNavigation,
 )
@@ -25,6 +26,7 @@ from lvguidance.core.laws.sliding_mode import (
 __all__ = [
     "AdaptiveTgoGuidance",
     "AugmentedProportionalNavigation",
+    "BiasedProportionalNavigation",
     "OptimalHomingGuidance",
     "PhasedGuidance",
     "ProportionalDerivative",
