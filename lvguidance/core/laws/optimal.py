@@ -128,7 +128,7 @@ class TerminalVelocityGuidance(GuidanceLaw):
         self.t_go_min = t_go_min
         self._axis: Vec | None = None
 
-    def reset(self) -> None:
+    def reset(self, scenario: Any = None) -> None:
         """Reset approach axis."""
         self._axis = None
 

@@ -38,6 +38,7 @@ class GuidanceState:
     t_final: float | None = None
     target_accel: Vec | None = None
     chaser_vel: Vec | None = None
+    lvlh_state: Vec | None = None
 
     @property
     def range(self) -> float:

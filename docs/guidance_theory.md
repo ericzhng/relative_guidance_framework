@@ -147,3 +147,47 @@ $$\tau_a \dot{\mathbf{a}}_c + \mathbf{a}_c = \mathbf{u}_{\text{cmd}}, \quad \|\d
 - **Objectives:** Soft docking ($R \le 2\text{ m}$, $v_{\text{rel}} \le 0.3\text{ m/s}$) with minimum fuel expenditure.
 - **Environment:** Central two-body Earth gravity, LVLH rotating frame, exact differential gravity feedforward.
 - **Evaluation:** Capture success, contact velocity, $\Delta V$ propellant use.
+
+---
+
+## 8. Astrodynamics & Orbital Relative Motion
+
+### 8.1 Clohessy-Wiltshire (Hill-Clohessy-Wiltshire) Equations
+For a circular reference target orbit with radius $r_0$ and mean motion $n = \sqrt{\mu / r_0^3}$, the relative motion in the target-centered Local-Vertical / Local-Horizontal (LVLH) frame is linearized as:
+$$\begin{aligned}
+\ddot{x} - 2n\dot{y} - 3n^2 x &= u_x \\
+\ddot{y} + 2n\dot{x} &= u_y \\
+\ddot{z} + n^2 z &= u_z
+\end{aligned}$$
+where:
+- $x$ is radial (outward from Earth center),
+- $y$ is along-track (direction of target orbital velocity),
+- $z$ is cross-track (normal to orbital plane).
+
+The state-space representation is $\dot{\mathbf{x}} = A \mathbf{x} + B \mathbf{u}$. The analytical State Transition Matrix (STM) $\Phi(t)$ provides closed-form mapping:
+$$\mathbf{x}(t) = \Phi(t) \mathbf{x}(0) + \int_0^t \Phi(t - \tau) B \mathbf{u}(\tau) d\tau$$
+
+### 8.2 Two-Impulse Clohessy-Wiltshire Transfer
+Partitioning the CW STM into $3 \times 3$ blocks:
+$$\Phi(t) = \begin{bmatrix} \Phi_{rr}(t) & \Phi_{rv}(t) \\ \Phi_{vr}(t) & \Phi_{vv}(t) \end{bmatrix}$$
+To transfer from initial position $\mathbf{r}_0$ to final target position $\mathbf{r}_f$ in transfer time $T_{tof}$:
+$$\mathbf{r}_f = \Phi_{rr}(T_{tof})\mathbf{r}_0 + \Phi_{rv}(T_{tof})\mathbf{v}_0^+$$
+When $\Phi_{rv}(T_{tof})$ is non-singular ($nT_{tof} \ne 2k\pi$), the required initial velocity is:
+$$\mathbf{v}_0^+ = \Phi_{rv}^{-1}(T_{tof}) \left[ \mathbf{r}_f - \Phi_{rr}(T_{tof})\mathbf{r}_0 \right]$$
+The two impulsive velocity increments are:
+$$\Delta \mathbf{v}_1 = \mathbf{v}_0^+ - \mathbf{v}_0^-, \qquad \Delta \mathbf{v}_2 = \mathbf{v}_f - \left[ \Phi_{vr}(T_{tof})\mathbf{r}_0 + \Phi_{vv}(T_{tof})\mathbf{v}_0^+ \right]$$
+
+### 8.3 Universal Variable Kepler Propagation & Lambert Problem
+For arbitrary eccentricities and long-duration transfers where linearization degrades:
+1. **Stumpff Functions:**
+   $$C(z) = \frac{1 - \cos\sqrt{z}}{z}, \qquad S(z) = \frac{\sqrt{z} - \sin\sqrt{z}}{\sqrt{z}^3}$$
+2. **Universal Kepler Equation:** Solved via Newton-Raphson on universal anomaly $\chi$.
+3. **Lambert Problem:** Given $\mathbf{r}_1, \mathbf{r}_2$ and transfer time $\Delta t$, computes the exact Keplerian orbit connecting the two points under full two-body gravity.
+
+### 8.4 State-Feedback Optimal Control: LQR and MPC
+1. **Linear Quadratic Regulator (LQR):** Discretizes the CW model via Zero-Order Hold (ZOH) $A_d = e^{A \Delta t}, B_d = \int_0^{\Delta t} e^{A s} B ds$. Bryson's rule balances state penalties against thrust capability:
+   $$Q = \text{diag}(1/p_{\max}^2, 1/v_{\max}^2), \qquad R = \text{diag}(1/a_{\max}^2)$$
+   The optimal state feedback gain $K = (R + B_d^T P B_d)^{-1} B_d^T P A_d$ is obtained by solving the Discrete Algebraic Riccati Equation (DARE).
+2. **Model Predictive Control (MPC):** Over horizon $H_p$, solves a box-constrained convex quadratic program:
+   $$\min_{\mathbf{u}_{0:H_p-1}} \sum_{k=0}^{H_p} \mathbf{x}_k^T Q \mathbf{x}_k + \sum_{k=0}^{H_p-1} \mathbf{u}_k^T R \mathbf{u}_k \quad \text{s.t.} \quad |u_{k,i}| \le a_{\max}$$
+   Solved in milliseconds via bounded least squares (`scipy.optimize.lsq_linear`), providing online actuator saturation handling.

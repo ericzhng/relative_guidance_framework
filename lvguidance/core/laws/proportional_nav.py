@@ -123,7 +123,7 @@ class BiasedProportionalNavigation(GuidanceLaw):
             desired_dir / np.linalg.norm(desired_dir) if desired_dir is not None else None
         )
 
-    def reset(self) -> None:
+    def reset(self, scenario: Any = None) -> None:
         """Reset internal state."""
         pass
 

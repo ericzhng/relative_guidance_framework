@@ -91,7 +91,7 @@ class TerminalApproachGuidance(GuidanceLaw):
         self.k_vel = k_vel
         self._axis: Vec | None = None
 
-    def reset(self) -> None:
+    def reset(self, scenario: Any = None) -> None:
         """Reset corridor axis."""
         self._axis = None
 

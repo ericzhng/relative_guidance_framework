@@ -1,14 +1,20 @@
-"""Tests for orbital rendezvous application."""
+"""Tests for orbital rendezvous application (both continuous and impulsive algorithms)."""
 
 import numpy as np
 import pytest
 
 from lvguidance.applications.orbital_rendezvous import (
     MU_EARTH,
+    ImpulsiveGlideslope,
+    LQRController,
+    LambertTransfer,
+    MPCController,
     OrbitalScenario,
+    TwoImpulseCW,
     circular_state,
     default_rendezvous_laws,
     lvlh_rotation,
+    run_comparison,
     simulate_rendezvous,
     to_lvlh,
 )
@@ -66,3 +72,53 @@ def test_every_rendezvous_law_captures_default_scenario(law):
     stats = summarize(res, sc.capture_radius)
     assert stats["success"]
     assert res.accel_norm.max() <= sc.max_accel + 1e-6
+
+
+# === Tests ported from spacecraft_rendezvous ===
+
+@pytest.fixture(scope="module")
+def rendezvous_fixture_scenario() -> OrbitalScenario:
+    rel0 = np.array([200.0, -5000.0, 100.0, 0.0, 0.0, 0.0])
+    return OrbitalScenario.circular(500e3, rel0, 3600.0)
+
+
+def test_impulsive_algorithms_arrive(rendezvous_fixture_scenario: OrbitalScenario):
+    results = run_comparison(
+        rendezvous_fixture_scenario,
+        [LambertTransfer(), ImpulsiveGlideslope(6)],
+        method="solve_ivp",
+    )
+    for res in results:
+        assert res.range[-1] < 1.0
+        assert res.rel_speed[-1] < 1e-3
+
+
+def test_two_impulse_cw_transfers(rendezvous_fixture_scenario: OrbitalScenario):
+    (res,) = run_comparison(
+        rendezvous_fixture_scenario,
+        [TwoImpulseCW()],
+        method="solve_ivp",
+    )
+    assert 1.0 < res.range[-1] < 200.0
+    assert len(res.burns) == 2
+
+
+def test_mpc_respects_thrust_limit_and_converges(rendezvous_fixture_scenario: OrbitalScenario):
+    mpc = MPCController(pos_tol=100.0, vel_tol=0.5, acc_tol=2e-3, a_max=5e-3)
+    (res,) = run_comparison(
+        rendezvous_fixture_scenario,
+        [mpc],
+        method="solve_ivp",
+    )
+    assert np.abs(res.accel).max() <= 5e-3 + 1e-9
+    assert res.range[-1] < 50.0
+
+
+def test_lqr_converges_without_saturation_on_small_offset():
+    scn = OrbitalScenario.circular(500e3, np.array([0.0, -200.0, 0.0, 0.0, 0.0, 0.0]), 3000.0)
+    (res,) = run_comparison(
+        scn,
+        [LQRController(pos_tol=100.0, vel_tol=0.5, acc_tol=5e-3)],
+        method="solve_ivp",
+    )
+    assert res.range[-1] < 5.0

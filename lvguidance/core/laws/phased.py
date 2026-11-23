@@ -26,11 +26,17 @@ class PhasedGuidance(GuidanceLaw):
         self.name = f"{midcourse.name} + terminal"
         self.switch_time: float | None = None
 
-    def reset(self) -> None:
+    def reset(self, scenario: Any = None) -> None:
         """Reset handover state and child guidance laws."""
         self.switch_time = None
-        self.midcourse.reset()
-        self.terminal.reset()
+        try:
+            self.midcourse.reset(scenario)
+        except TypeError:
+            self.midcourse.reset()
+        try:
+            self.terminal.reset(scenario)
+        except TypeError:
+            self.terminal.reset()
 
     def command(self, state: GuidanceState) -> Vec:
         """Delegate command to the active phase law."""

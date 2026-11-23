@@ -225,6 +225,7 @@ def simulate_ivp(
                 rel_vel=v_t - v_c,
                 t_final=duration,
                 chaser_vel=v_c,
+                lvlh_state=x_lvlh,
             )
             dv = np.asarray(law.burn(float(t), state), dtype=float)
             if np.any(dv):
@@ -247,6 +248,7 @@ def simulate_ivp(
             rel_vel=v_t - v_c,
             t_final=duration,
             chaser_vel=v_c,
+            lvlh_state=x_lvlh,
         )
         accel_lvlh = np.asarray(law.command(state), dtype=float)
         accels[k] = accel_lvlh

@@ -48,3 +48,8 @@ def lvlh_to_eci(r_t: Vec, v_t: Vec, rel: Vec) -> tuple[Vec, Vec]:
     r_c = r_t + rho
     v_c = v_t + rho_dot + np.cross(omega, rho)
     return r_c, v_c
+
+
+to_lvlh = eci_to_lvlh
+
+
