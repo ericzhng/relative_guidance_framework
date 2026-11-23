@@ -60,7 +60,7 @@ def plot_trajectories_2d(
 ) -> Figure:
     """In-plane relative trajectories (along-track y vs radial x), burns marked."""
     apply_style()
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(9.6, 5.0))
     for i, res in enumerate(results):
         col, ls = color_for(i), linestyle_for(i)
         st = res.lvlh_state
@@ -88,7 +88,13 @@ def plot_trajectories_2d(
     ax.set_xlabel("Along-track y [km]")
     ax.set_ylabel("Radial x [km]")
     ax.set_title("Relative trajectory in the orbital plane (dots = impulsive burns)")
-    ax.legend()
+    ax.legend(
+        bbox_to_anchor=(1.02, 1.0),
+        loc="upper left",
+        borderaxespad=0.0,
+        fontsize=8,
+        frameon=True,
+    )
     fig.tight_layout()
     return fig
 
@@ -325,11 +331,12 @@ def animate_rendezvous(
     t_end = max(float(r.t[-1]) for r in results)
     frame_t = np.linspace(0.0, t_end, max_frames)
     all_xy = np.vstack([r.lvlh_state[:, :2] for r in results])
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(9.6, 5.0))
     ax.set_xlim(all_xy[:, 1].min() / 1e3 * 1.1 - 0.2, all_xy[:, 1].max() / 1e3 * 1.1 + 0.2)
     ax.set_ylim(all_xy[:, 0].min() / 1e3 * 1.1 - 0.2, all_xy[:, 0].max() / 1e3 * 1.1 + 0.2)
     ax.set_xlabel("Along-track y [km]")
     ax.set_ylabel("Radial x [km]")
+    ax.axhline(0.0, color="grey", lw=0.8, alpha=0.4, zorder=0)  # V-bar
     ax.plot(0, 0, "*", color="gold", mec="k", ms=15, zorder=5, label="Target")
     trails = [
         ax.plot([], [], color=color_for(i), lw=1.2, label=r.law_name)[0]
@@ -337,7 +344,13 @@ def animate_rendezvous(
     ]
     dots = [ax.plot([], [], "o", color=color_for(i), ms=7)[0] for i in range(len(results))]
     time_text = ax.text(0.02, 0.95, "", transform=ax.transAxes, fontsize=10)
-    ax.legend(loc="lower right", fontsize=8)
+    ax.legend(
+        bbox_to_anchor=(1.02, 1.0),
+        loc="upper left",
+        borderaxespad=0.0,
+        fontsize=8,
+        frameon=True,
+    )
     fig.tight_layout()
 
     def update(frame_idx: int) -> list[Any]:

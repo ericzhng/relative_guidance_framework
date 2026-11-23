@@ -40,4 +40,3 @@ __all__ = [
     "stumpff_c",
     "stumpff_s",
 ]
-
