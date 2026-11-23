@@ -33,6 +33,7 @@ tests/
   test_orbital_rendezvous.py     # Two-body energy conservation, impulsive & control algorithms, capture tests
 docs/
   guidance_theory.md             # Complete mathematical derivations (Bryson-Ho, CW, Lambert, LQR/MPC)
+  clohessy_wiltshire_derivation.md # First-principles derivation of CW equations & analytical STM
   rendezvous_merge_plan.md       # Full architecture & migration roadmap from spacecraft_rendezvous
 ```
 

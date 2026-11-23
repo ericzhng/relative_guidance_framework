@@ -164,6 +164,8 @@ where:
 - $y$ is along-track (direction of target orbital velocity),
 - $z$ is cross-track (normal to orbital plane).
 
+*(For the complete, first-principles derivation starting from inertial Newtonian mechanics and the rotating frame Transport Theorem, see [docs/clohessy_wiltshire_derivation.md](file:///e:/2026-11/launch_vehicle_guidance_law/docs/clohessy_wiltshire_derivation.md).)*
+
 The state-space representation is $\dot{\mathbf{x}} = A \mathbf{x} + B \mathbf{u}$. The analytical State Transition Matrix (STM) $\Phi(t)$ provides closed-form mapping:
 $$\mathbf{x}(t) = \Phi(t) \mathbf{x}(0) + \int_0^t \Phi(t - \tau) B \mathbf{u}(\tau) d\tau$$
 
