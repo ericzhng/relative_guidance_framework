@@ -277,9 +277,9 @@ gantt
 
 ---
 
-## 6. Backward Compatibility & Non-Disruption Guarantee
+## 6. Clean Refactoring Strategy (Zero Backward-Compatibility Debt)
 
-To ensure existing workflows and tests remain fully functional during and after this refactor:
-1. Top-level imports in `lvguidance/__init__.py` and `lvguidance/guidance/__init__.py` will maintain aliased imports pointing to the unified core laws.
-2. `tests/test_package.py` and `examples/compare_laws.py` will continue to run without breaking changes.
-3. New capabilities are strictly additive and organized cleanly under `lvguidance.core` and `lvguidance.applications`.
+As instructed, this architecture represents a **clean refactor** with no legacy shims or backwards compatibility compromises:
+1. **Direct Package Restructuring**: Legacy directories (`lvguidance/dynamics`, `lvguidance/guidance`, `lvguidance/simulation`, `lvguidance/visualization`) are fully migrated to `lvguidance.core` and `lvguidance.applications`.
+2. **Clean Import Paths**: No deprecated aliases or duplicate wrappers. Every module directly imports from its designated core or application namespace.
+3. **Migrated Test & Example Suites**: Tests in `tests/` and examples in `examples/` are comprehensively updated to the new modular structure, validating both missile homing intercept and orbital rendezvous applications.
