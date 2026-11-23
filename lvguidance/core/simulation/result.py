@@ -50,6 +50,30 @@ class SimulationResult:
     events: dict[str, float] = field(default_factory=dict)
     burns: list[Burn] = field(default_factory=list)
 
+    @property
+    def name(self) -> str:
+        """Alias for law_name for rendezvous controller compatibility."""
+        return self.law_name
+
+    @cached_property
+    def lvlh_state(self) -> Arr:
+        """Relative state [x, y, z, vx, vy, vz] in the target LVLH frame."""
+        from lvguidance.core.astrodynamics.frames import eci_to_lvlh
+
+        out = np.zeros_like(self.target)
+        for k in range(len(self.t)):
+            out[k] = eci_to_lvlh(
+                self.target[k, :3], self.target[k, 3:],
+                self.chaser[k, :3], self.chaser[k, 3:]
+            )
+        return out
+
+    @property
+    def state(self) -> Arr:
+        """Alias for lvlh_state for rendezvous visualization compatibility."""
+        return self.lvlh_state
+
+
     @cached_property
     def rel_pos(self) -> Arr:
         """Relative position x = r_target - r_chaser [m]."""
